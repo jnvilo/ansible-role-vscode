@@ -1,0 +1,16 @@
+ 
+- name: Check if extensions are installed
+  shell: code --list-extensions | grep -qw "{{ item }}"
+  changed_when: false 
+  become: yes
+  become_user: jasonvi
+  ignore_errors: yes
+  register: extension_check
+
+
+
+- name: Install VSCode Extension Item 
+  command: code --install-extension "{{ item }}"
+  when: extension_check.rc != 0  
+  become: yes
+  become_user: jasonvi

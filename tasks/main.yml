@@ -1,0 +1,33 @@
+---
+- name: Add VSCode repository key
+  apt_key:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+
+- name: Check if VSCode repository files exist
+  stat:
+    path: "/etc/apt/sources.list.d/{{ item }}"
+  register: vscode_repo_files_exist
+  changed_when: false
+  with_items:
+    - "packages_microsoft_com_repos_vscode.list"
+    - "vscode.list"
+
+- name: Add VSCode repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+    state: present
+    update_cache: yes
+  changed_when: false
+  when: not vscode_repo_files_exist.results | selectattr('stat.exists') | list
+
+
+- name: Install VSCode package
+  apt:
+    name: code
+    state: present
+
+- name: Install extensions
+  include_tasks: extensions.yml
+  loop: "{{vscode_default_extensions}}"
+
