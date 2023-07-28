@@ -3,4 +3,5 @@ vscode_default_extensions:
   - ms-python.python
   - redhat.ansible
   - github.copilot
+  - hashicorp.terraform
 
